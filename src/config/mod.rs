@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use serde::Deserialize;
 
 use crate::config::{centrifugo::CentrifugoConfig, logging::LoggerConfig, storage::StorageConfig};
@@ -7,7 +9,7 @@ mod logging;
 mod storage;
 
 #[derive(Debug, Deserialize)]
-pub struct Config {
+pub struct MessageRelayConfig {
     /// Storage configuration
     pub storage: StorageConfig,
 
@@ -16,4 +18,14 @@ pub struct Config {
 
     /// Centrifugo configuration
     pub centrifugo: CentrifugoConfig,
+}
+
+impl MessageRelayConfig {
+    pub fn from_path(path: PathBuf) -> eyre::Result<Self> {
+        let config = config::Config::builder()
+            .add_source(config::File::from(path))
+            .build()?;
+
+        Ok(config.try_deserialize()?)
+    }
 }
