@@ -5,6 +5,9 @@ use bytes::Bytes;
 mod impls;
 mod traits;
 
+pub use impls::NatsPublisher;
+pub use traits::MessagePublisher;
+
 #[async_trait]
 pub trait Publisher {
     type Error: std::error::Error + Send + Sync + 'static;

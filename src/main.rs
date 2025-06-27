@@ -1,5 +1,6 @@
 mod cli;
 mod config;
+mod dbwatcher;
 mod publisher;
 mod types;
 

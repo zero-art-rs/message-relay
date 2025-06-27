@@ -2,10 +2,10 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
-use crate::config::{centrifugo::CentrifugoConfig, logging::LoggerConfig, storage::StorageConfig};
+use crate::config::{logging::LoggerConfig, nats::NatsConfig, storage::StorageConfig};
 
-mod centrifugo;
 mod logging;
+mod nats;
 mod storage;
 
 #[derive(Debug, Deserialize)]
@@ -16,8 +16,8 @@ pub struct MessageRelayConfig {
     /// Logging configuration
     pub logging: LoggerConfig,
 
-    /// Centrifugo configuration
-    pub centrifugo: CentrifugoConfig,
+    /// NATS configuration
+    pub nats: NatsConfig,
 }
 
 impl MessageRelayConfig {

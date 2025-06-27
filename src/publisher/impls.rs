@@ -2,7 +2,7 @@ use async_nats::subject::ToSubject;
 use async_trait::async_trait;
 use bytes::Bytes;
 
-use crate::publisher::Publisher;
+use crate::publisher::{Publisher, traits::MessagePublisher};
 
 pub struct NatsPublisher {
     connection: async_nats::Client,
@@ -26,3 +26,6 @@ impl Publisher for NatsPublisher {
         self.connection.publish(subject, message.into()).await
     }
 }
+
+#[async_trait]
+impl MessagePublisher for NatsPublisher {}

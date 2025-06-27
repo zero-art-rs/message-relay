@@ -8,6 +8,9 @@ pub struct StorageConfig {
     /// MongoDB database name
     pub database_name: String,
 
-    /// Outbox table name
-    pub outbox_table_name: String,
+    /// Messages outbox collection name
+    pub messages_outbox_collection_name: String,
+
+    /// Group operations outbox collection name
+    pub group_operations_outbox_collection_name: String,
 }

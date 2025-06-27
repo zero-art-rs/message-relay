@@ -1,3 +1,5 @@
-mod messages;
+mod centrifugo;
+mod outbox;
 
-pub use messages::Message;
+pub use centrifugo::Message;
+pub use outbox::{GroupOperationOutbox, MessageOutbox};
