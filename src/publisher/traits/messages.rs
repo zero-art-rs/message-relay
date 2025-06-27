@@ -1,11 +1,31 @@
 use async_trait::async_trait;
+use uuid::Uuid;
 
-use crate::{publisher::Publisher, types::MessageOutbox};
+use crate::{
+    publisher::Publisher,
+    types::{CentrifugoEventType, CentrifugoMessage, CentrifugoMethod, CentrifugoPayload},
+};
 
 #[async_trait]
 pub trait MessagePublisher: Publisher {
-    async fn publish_message(&self, message: MessageOutbox) -> Result<(), Self::Error> {
-        let subject = format!("chat.{}", message.chat_id);
-        self.publish(subject, message.content).await
+    async fn publish_message(
+        &self,
+        chat_id: Uuid,
+        data: serde_json::Value,
+    ) -> Result<(), Self::Error> {
+        let centrifugo_message = CentrifugoMessage {
+            method: CentrifugoMethod::Broadcast,
+            payload: CentrifugoPayload {
+                channels: vec![format!("personal:{}", chat_id)],
+                event_type: CentrifugoEventType::Message,
+                data,
+            },
+        };
+
+        let serialized_message = serde_json::to_vec(&centrifugo_message)
+            .map_err(|_| panic!("Failed to serialize centrifugo message to bytes"))?;
+
+        let subject = format!("events.personal.{}", chat_id);
+        self.publish(subject, serialized_message).await
     }
 }

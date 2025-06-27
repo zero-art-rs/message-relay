@@ -96,7 +96,9 @@ where
     async fn handle_new_message(&self, message: MessageOutbox) -> Result<(), eyre::Error> {
         debug!("Handling new message: {:?}", message);
 
-        self.publisher.publish_message(message.clone()).await?;
+        self.publisher
+            .publish_message(message.chat_id, serde_json::to_value(message.clone())?)
+            .await?;
 
         let filter = doc! { "chat_id": Bson::Binary(Binary {
             subtype: BinarySubtype::Generic,
