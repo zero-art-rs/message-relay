@@ -3,7 +3,7 @@ use tokio::select;
 use tokio::signal::unix;
 use tokio::signal::unix::SignalKind;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use crate::{
     cli::{arguments, logging},
@@ -70,7 +70,26 @@ pub async fn run(args: arguments::Run) -> eyre::Result<()> {
     info!("Shutting down...");
     cancel_token.cancel();
 
-    tokio::time::timeout(std::time::Duration::from_secs(10), task_tracker.wait()).await?;
+    let mut sigterm =
+        unix::signal(SignalKind::terminate()).expect("Failed to create SIGTERM signal handler");
+    let mut sigint =
+        unix::signal(SignalKind::interrupt()).expect("Failed to create SIGINT signal handler");
+
+    select! {
+        res = tokio::time::timeout(std::time::Duration::from_secs(10), task_tracker.wait()) => {
+            if let Err(e) = res {
+                warn!("Shutdown timeout reached: {}", e);
+            } else {
+                info!("Shutdown completed gracefully");
+            }
+        }
+        _ = sigterm.recv() => {
+            tracing::info!("Force shutdown");
+        }
+        _ = sigint.recv() => {
+            tracing::info!("Force shutdown");
+        }
+    }
 
     Ok(())
 }

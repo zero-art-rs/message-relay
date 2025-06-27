@@ -1,6 +1,10 @@
-use mongodb::{Collection, bson::doc, change_stream::event::OperationType};
+use mongodb::{
+    Collection,
+    bson::{Binary, Bson, doc, spec::BinarySubtype},
+    change_stream::event::OperationType,
+};
 use tokio_util::sync::CancellationToken;
-use tracing::{info, warn};
+use tracing::{debug, error, info, warn};
 
 use crate::{
     publisher::MessagePublisher,
@@ -34,6 +38,12 @@ where
     P: MessagePublisher + Send + Sync + 'static,
 {
     pub async fn run(self, cancel_token: CancellationToken) -> Result<(), eyre::Error> {
+        info!("Handling history messages");
+
+        self.handle_history_messages().await?;
+
+        info!("History messages handled");
+
         let mut messages_stream = self.messages_outbox_collection.watch().await?;
         let mut group_operations_stream = self.group_operations_outbox_collection.watch().await?;
 
@@ -42,23 +52,31 @@ where
         loop {
             tokio::select! {
                 message_opt = messages_stream.next() => {
-                    if let Some(Ok(message)) = message_opt {
-                        info!("Got a new message outbox event: {:?}", message);
+                    let Some(message) = message_opt else {
+                        info!("Messages stream closed");
+                        break;
+                    };
 
-                        if !matches!(message.operation_type, OperationType::Insert) {
+                    let message = match message {
+                        Ok(message) => message,
+                        Err(e) => {
+                            error!("Error getting message from stream: {:?}", e);
                             continue;
                         }
+                    };
 
-                        info!("Got a new message outbox insert event: {:?}", message);
+                    info!("Got a new message outbox event: {:?}", message);
 
-                        let Some(message) = message.full_document else {
-                            continue;
-                        };
-
-                        info!("Got a new message: {:?}", message);
-
-                        self.handle_new_message(message).await?;
+                    if !matches!(message.operation_type, OperationType::Insert) {
+                        continue;
                     }
+
+                    let Some(message) = message.full_document else {
+                        error!("Message is not a full document");
+                        continue;
+                    };
+
+                    self.handle_new_message(message).await?;
                 }
                 _group_operation = group_operations_stream.next() => {
                     warn!("Got a group operation, but group operations are not supported yet");
@@ -76,13 +94,42 @@ where
     }
 
     async fn handle_new_message(&self, message: MessageOutbox) -> Result<(), eyre::Error> {
+        debug!("Handling new message: {:?}", message);
+
         self.publisher.publish_message(message.clone()).await?;
 
-        let filter = doc! { "_id": message.chat_id.to_string() };
+        let filter = doc! { "chat_id": Bson::Binary(Binary {
+            subtype: BinarySubtype::Generic,
+            bytes: message.chat_id.as_bytes().to_vec(),
+        }), "sequence_number": message.sequence_number };
 
-        self.messages_outbox_collection.delete_one(filter).await?;
+        debug!("Deleting message from outbox: {:?}", filter);
 
-        info!("Deleted message from outbox");
+        self.messages_outbox_collection.delete_many(filter).await?;
+
+        debug!("Deleted message from outbox");
+
+        Ok(())
+    }
+
+    async fn handle_history_messages(&self) -> Result<(), eyre::Error> {
+        let mut all_messages = self
+            .messages_outbox_collection
+            .find(doc! {})
+            .sort(doc! { "created_at": -1 })
+            .await?;
+
+        while let Some(message) = all_messages.next().await {
+            let message = match message {
+                Ok(message) => message,
+                Err(e) => {
+                    error!("Error getting message from stream: {:?}", e);
+                    continue;
+                }
+            };
+
+            self.handle_new_message(message).await?;
+        }
 
         Ok(())
     }
