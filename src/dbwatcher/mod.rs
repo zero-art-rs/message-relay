@@ -1,14 +1,10 @@
-use mongodb::{
-    Collection,
-    bson::{Document, doc},
-    change_stream::event::OperationType,
-};
+use mongodb::{Collection, bson::doc, change_stream::event::OperationType};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, warn};
 
 use crate::{
     publisher::MessagePublisher,
-    types::{GroupOperationOutbox, Message, MessageOutbox},
+    types::{GroupOperationOutbox, MessageOutbox},
 };
 use futures_util::StreamExt;
 

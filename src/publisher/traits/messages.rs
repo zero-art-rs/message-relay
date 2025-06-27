@@ -1,9 +1,6 @@
 use async_trait::async_trait;
 
-use crate::{
-    publisher::Publisher,
-    types::{Message, MessageOutbox},
-};
+use crate::{publisher::Publisher, types::MessageOutbox};
 
 #[async_trait]
 pub trait MessagePublisher: Publisher {
