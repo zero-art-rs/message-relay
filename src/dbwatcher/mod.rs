@@ -17,6 +17,9 @@ pub struct DatabaseWatcher<P> {
     publisher: P,
     messages_outbox_collection: Collection<MessageOutbox>,
     group_operations_outbox_collection: Collection<GroupOperationOutbox>,
+
+    messages_namespace: String,
+    subject: String,
 }
 
 impl<P> DatabaseWatcher<P> {
@@ -24,11 +27,15 @@ impl<P> DatabaseWatcher<P> {
         publisher: P,
         messages_outbox_collection: Collection<MessageOutbox>,
         group_operations_outbox_collection: Collection<GroupOperationOutbox>,
+        messages_namespace: String,
+        subject: String,
     ) -> Self {
         Self {
             publisher,
             messages_outbox_collection,
             group_operations_outbox_collection,
+            messages_namespace,
+            subject,
         }
     }
 }
@@ -97,7 +104,12 @@ where
         debug!("Handling new message: {:?}", message);
 
         self.publisher
-            .publish_message(message.chat_id, serde_json::to_value(message.clone())?)
+            .publish_message(
+                message.chat_id,
+                serde_json::to_value(message.clone())?,
+                self.messages_namespace.clone(),
+                self.subject.clone(),
+            )
             .await?;
 
         let filter = doc! { "chat_id": Bson::Binary(Binary {

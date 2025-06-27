@@ -39,6 +39,8 @@ pub async fn run(args: arguments::Run) -> eyre::Result<()> {
         nats_publisher,
         messages_outbox_collection,
         group_operations_outbox_collection,
+        config.nats.messages_namespace.clone(),
+        config.nats.subject.clone(),
     );
 
     let cancel_token = CancellationToken::new();
