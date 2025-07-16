@@ -32,14 +32,15 @@ pub async fn run(args: arguments::Run) -> eyre::Result<()> {
 
     let messages_outbox_collection =
         database.collection(&config.storage.messages_outbox_collection_name);
-    let group_operations_outbox_collection =
-        database.collection(&config.storage.group_operations_outbox_collection_name);
+    let art_changes_outbox_collection =
+        database.collection(&config.storage.art_changes_outbox_collection_name);
 
     let db_watcher = DatabaseWatcher::new(
         nats_publisher,
         messages_outbox_collection,
-        group_operations_outbox_collection,
+        art_changes_outbox_collection,
         config.nats.messages_namespace.clone(),
+        config.nats.art_changes_namespace.clone(),
         config.nats.subject.clone(),
     );
 

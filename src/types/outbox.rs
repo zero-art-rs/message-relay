@@ -17,9 +17,9 @@ pub struct MessageOutbox {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GroupOperationOutbox {
-    pub id: Uuid,
+pub struct ARTChangeOutbox {
     pub chat_id: Uuid,
     pub data: Vec<u8>,
     pub created_at: DateTime,
+    pub sequence_number: i64,
 }

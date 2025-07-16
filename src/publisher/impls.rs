@@ -2,7 +2,7 @@ use async_nats::subject::ToSubject;
 use async_trait::async_trait;
 use bytes::Bytes;
 
-use crate::publisher::{Publisher, traits::MessagePublisher};
+use crate::publisher::{Publisher, traits::ARTChangesPublisher, traits::MessagePublisher};
 
 pub struct NatsPublisher {
     connection: async_nats::Client,
@@ -29,3 +29,6 @@ impl Publisher for NatsPublisher {
 
 #[async_trait]
 impl MessagePublisher for NatsPublisher {}
+
+#[async_trait]
+impl ARTChangesPublisher for NatsPublisher {}
