@@ -10,6 +10,8 @@ pub struct MessageOutbox {
     pub created_at: DateTime<Utc>,
     /// Sequential number of this message in the chat
     pub sequence_number: i64,
+    /// Sequential number of epoch during which the message was sent
+    pub epoch: u32,
     /// Unique identifier of the chat to send the message to.
     pub chat_id: Uuid,
 }
