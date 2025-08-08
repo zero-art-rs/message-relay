@@ -22,4 +22,6 @@ pub struct ARTChangeOutbox {
     pub data: Vec<u8>,
     pub created_at: DateTime<Utc>,
     pub sequence_number: i64,
+    pub metadata: Option<Vec<u8>>,
+    pub payload: Option<Vec<u8>>,
 }
