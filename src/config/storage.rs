@@ -10,7 +10,4 @@ pub struct StorageConfig {
 
     /// Messages outbox collection name
     pub messages_outbox_collection_name: String,
-
-    /// Group operations outbox collection name
-    pub art_changes_outbox_collection_name: String,
 }
