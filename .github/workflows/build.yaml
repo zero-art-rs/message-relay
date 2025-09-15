@@ -7,7 +7,8 @@ on:
     - 'v?[0-9]+.[0-9]+.[0-9]+-[0-9]+'
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/message-relay
+  IMAGE_NAME: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+  CACHE_REPO: ghcr.io/${{ github.repository }}/cache
 
 jobs:
   build:
@@ -32,7 +33,12 @@ jobs:
 
       - name: Build Image
         run: |
-          buildah bud --ssh default=$SSH_AUTH_SOCK  -t $IMAGE_NAME:${{ github.ref_name }} .
+          buildah bud \
+          --ssh default=$SSH_AUTH_SOCK \
+          --layers \
+          --cache-from $CACHE_REPO \
+          --cache-to $CACHE_REPO \
+          -t $IMAGE_NAME .
 
       - name: Login to GHCR
         run: |
@@ -40,4 +46,4 @@ jobs:
 
       - name: Push Image (tag)
         run: |
-          buildah push $IMAGE_NAME:${{ github.ref_name }}
+          buildah push $IMAGE_NAME
