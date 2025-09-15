@@ -9,6 +9,8 @@ WORKDIR /opt
 COPY Cargo.lock .
 COPY Cargo.toml .
 
+RUN cargo build --release || true
+
 COPY src src/
 
 RUN cargo build --release -p message-relay \

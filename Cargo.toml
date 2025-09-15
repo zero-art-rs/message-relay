@@ -3,6 +3,10 @@ name = "message-relay"
 version = "0.1.4"
 edition = "2024"
 
+[[bin]]
+name = "message-relay"
+path = "src/main.rs"
+
 [dependencies]
 config = { version = "0.15.11", features = ["toml"] }
 tokio = { version = "1.45.1", features = ["full"] }
