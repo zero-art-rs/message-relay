@@ -2,7 +2,7 @@
 FROM rust:1.85-alpine3.20 as builder
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 
-RUN apk add --no-cache musl-dev openssl-dev build-base git openssh-client
+RUN apk add --no-cache musl-dev openssl-dev build-base git openssh-client protobuf protobuf-dev
 
 WORKDIR /opt
 
