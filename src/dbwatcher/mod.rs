@@ -10,8 +10,11 @@ use crate::publisher::ARTChangesPublisher;
 use crate::{
     publisher::MessagePublisher,
     types::MessageOutbox,
+    types::proto::{Frame, SpFrame}
 };
 use futures_util::StreamExt;
+use prost::Message;
+use prost_types::Timestamp;
 
 #[derive(Debug, Clone)]
 pub struct DatabaseWatcher<P> {
@@ -97,10 +100,20 @@ where
     async fn handle_new_message(&self, message: MessageOutbox) -> Result<(), eyre::Error> {
         debug!("Handling new message: {}", message);
 
+        let frame = Frame::decode(&*message.content)?;
+        let sp_frame = SpFrame {
+            seq_num: message.sequence_number as u64,
+            created: Some(Timestamp {
+                seconds: message.created_at.timestamp(),
+                nanos: message.created_at.timestamp_subsec_nanos() as i32,
+            }),
+            frame: Some(frame),
+        };
+
         self.publisher
             .publish_message(
                 message.chat_id,
-                serde_json::to_value(message.clone())?,
+                sp_frame.encode_to_vec(),
                 self.messages_namespace.clone(),
                 self.subject.clone(),
             )

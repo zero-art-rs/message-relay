@@ -36,7 +36,7 @@ pub struct CentrifugoPayload {
     #[serde(rename = "event_type")]
     pub event_type: CentrifugoEventType,
     #[serde(rename = "data")]
-    pub data: serde_json::Value,
+    pub data: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

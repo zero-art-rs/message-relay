@@ -20,7 +20,7 @@ pub trait ARTChangesPublisher: Publisher {
             payload: CentrifugoPayload {
                 channels: vec![format!("{namespace}:{chat_id}")],
                 event_type: CentrifugoEventType::ARTChange,
-                data,
+                data: "".to_string(),
             },
         };
 

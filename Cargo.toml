@@ -2,6 +2,7 @@
 name = "message-relay"
 version = "0.1.4"
 edition = "2024"
+build = "build.rs"
 
 [[bin]]
 name = "message-relay"
@@ -25,4 +26,9 @@ bytes = { version = "1.10.1" }
 mongodb = { version = "3.2.3" }
 futures-util = { version = "0.3.31" }
 serde_with = { version = "3.14.0", features = ["base64"] }
-base64 = { version = "0.22.1" }
+base64 = { version = "0.22.1"}
+prost = { version = "0.14.1" }
+prost-types = { version = "0.14.1" }
+
+[build-dependencies]
+prost-build = "0.14.1"

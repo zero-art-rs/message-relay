@@ -5,13 +5,14 @@ use crate::{
     publisher::Publisher,
     types::{CentrifugoEventType, CentrifugoMessage, CentrifugoMethod, CentrifugoPayload},
 };
+use base64::{prelude::BASE64_STANDARD, Engine};
 
 #[async_trait]
 pub trait MessagePublisher: Publisher {
     async fn publish_message(
         &self,
         chat_id: Uuid,
-        data: serde_json::Value,
+        data: Vec<u8>,
         namespace: String,
         subject: String,
     ) -> Result<(), Self::Error> {
@@ -20,7 +21,7 @@ pub trait MessagePublisher: Publisher {
             payload: CentrifugoPayload {
                 channels: vec![format!("{namespace}:{chat_id}")],
                 event_type: CentrifugoEventType::Message,
-                data,
+                data: BASE64_STANDARD.encode(data),
             },
         };
 
