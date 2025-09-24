@@ -6,11 +6,10 @@ use mongodb::{
 use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info};
 
-use crate::publisher::ARTChangesPublisher;
 use crate::{
     publisher::MessagePublisher,
     types::MessageOutbox,
-    types::proto::{Frame, SpFrame}
+    types::{Frame, SpFrame}
 };
 use futures_util::StreamExt;
 use prost::Message;
@@ -43,7 +42,7 @@ impl<P> DatabaseWatcher<P> {
 
 impl<P> DatabaseWatcher<P>
 where
-    P: MessagePublisher + ARTChangesPublisher + Send + Sync + 'static,
+    P: MessagePublisher + Send + Sync + 'static,
 {
     pub async fn run(self, cancel_token: CancellationToken) -> Result<(), eyre::Error> {
         info!("Handling history messages");

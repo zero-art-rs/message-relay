@@ -6,7 +6,7 @@ mod impls;
 mod traits;
 
 pub use impls::NatsPublisher;
-pub use traits::{ARTChangesPublisher, MessagePublisher};
+pub use traits::MessagePublisher;
 
 #[async_trait]
 pub trait Publisher {

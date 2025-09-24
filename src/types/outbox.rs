@@ -1,4 +1,4 @@
-use std::fmt::{write, Display};
+use std::fmt::{Display};
 use chrono::{Utc, DateTime};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

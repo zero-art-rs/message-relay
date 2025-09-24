@@ -25,8 +25,6 @@ pub enum CentrifugoEventType {
     UserAdded,
     #[serde(rename = "user_removed")]
     UserRemoved,
-    #[serde(rename = "art_change")]
-    ARTChange,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
