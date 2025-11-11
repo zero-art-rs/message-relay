@@ -1,9 +1,9 @@
-use std::fmt::{Display};
-use chrono::{Utc, DateTime};
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use serde_with::{serde_as, base64::Base64};
 use base64::prelude::*;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use serde_with::{base64::Base64, serde_as};
+use std::fmt::Display;
+use uuid::Uuid;
 
 #[serde_as]
 #[derive(Debug, Clone, Serialize, Deserialize)]

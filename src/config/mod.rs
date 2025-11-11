@@ -2,13 +2,13 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
-use crate::config::{logging::LoggerConfig, nats::NatsConfig, storage::StorageConfig};
 use crate::config::api::ApiConfig;
+use crate::config::{logging::LoggerConfig, nats::NatsConfig, storage::StorageConfig};
 
+mod api;
 mod logging;
 mod nats;
 mod storage;
-mod api;
 
 #[derive(Debug, Deserialize)]
 pub struct MessageRelayConfig {

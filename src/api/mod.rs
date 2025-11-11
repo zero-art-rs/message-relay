@@ -1,15 +1,15 @@
-use tokio_util::sync::CancellationToken;
 use axum::Router;
-use utoipa::OpenApi;
-use utoipa_axum::router::OpenApiRouter;
-use utoipa_axum::routes;
-use tower_http::{classify::ServerErrorsFailureClass, cors::CorsLayer, trace::TraceLayer};
-use tracing::{Span, info, info_span};
 use axum::{
     extract::{MatchedPath, Request},
     response::Response,
 };
 use std::time::Duration;
+use tokio_util::sync::CancellationToken;
+use tower_http::{classify::ServerErrorsFailureClass, cors::CorsLayer, trace::TraceLayer};
+use tracing::{Span, info, info_span};
+use utoipa::OpenApi;
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_axum::routes;
 
 /// Check health
 #[utoipa::path(
@@ -41,10 +41,7 @@ pub fn build_router() -> Router<()> {
     router
 }
 
-pub async fn run_server(
-    address: String,
-    cancellation: CancellationToken,
-) -> eyre::Result<()> {
+pub async fn run_server(address: String, cancellation: CancellationToken) -> eyre::Result<()> {
     info!("Starting API server on {}", address);
     let listener = tokio::net::TcpListener::bind(address).await?;
 

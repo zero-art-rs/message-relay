@@ -9,7 +9,7 @@ use tracing::{debug, error, info};
 use crate::{
     publisher::MessagePublisher,
     types::MessageOutbox,
-    types::{Frame, SpFrame}
+    types::{Frame, SpFrame},
 };
 use futures_util::StreamExt;
 use prost::Message;

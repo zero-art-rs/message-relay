@@ -5,7 +5,7 @@ use crate::{
     publisher::Publisher,
     types::{CentrifugoEventType, CentrifugoMessage, CentrifugoMethod, CentrifugoPayload},
 };
-use base64::{prelude::BASE64_STANDARD, Engine};
+use base64::{Engine, prelude::BASE64_STANDARD};
 
 #[async_trait]
 pub trait MessagePublisher: Publisher {
