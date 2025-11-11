@@ -4,6 +4,7 @@ use tokio::signal::unix;
 use tokio::signal::unix::SignalKind;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, info, warn};
+use crate::api;
 
 use crate::{
     cli::{arguments, logging},
@@ -50,6 +51,11 @@ pub async fn run(args: arguments::Run) -> eyre::Result<()> {
             cancel_token_clone.cancel();
         }
     });
+    
+    task_tracker.spawn(api::run_server(
+        config.api.address.to_string(),
+        cancel_token.clone(),
+    ));
 
     let mut sigterm =
         unix::signal(SignalKind::terminate()).expect("Failed to create SIGTERM signal handler");

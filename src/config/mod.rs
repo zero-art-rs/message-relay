@@ -3,10 +3,12 @@ use std::path::PathBuf;
 use serde::Deserialize;
 
 use crate::config::{logging::LoggerConfig, nats::NatsConfig, storage::StorageConfig};
+use crate::config::api::ApiConfig;
 
 mod logging;
 mod nats;
 mod storage;
+mod api;
 
 #[derive(Debug, Deserialize)]
 pub struct MessageRelayConfig {
@@ -18,6 +20,9 @@ pub struct MessageRelayConfig {
 
     /// NATS configuration
     pub nats: NatsConfig,
+
+    /// Api configuration
+    pub api: ApiConfig,
 }
 
 impl MessageRelayConfig {
